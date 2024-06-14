@@ -4,8 +4,8 @@ Datasets, visualization and analysis tools used in the paper *"Computational map
 
 <sup>1</sup>	Department of Pathology, CHU, Imag’IN Platform, IUCT-Oncopole, Toulouse, France.  
 <sup>2</sup>	Cancer Research Center of Toulouse, Team 9 NoLymIT and Labex TOUCAN, Toulouse, France.  
-<sup>#</sup>	Correspondence: brousset.p@chu-toulouse.fr | +33 5 31 156 141.
-<sup>*</sup>	Authors equally contributed.  
+<sup>#</sup>	Correspondence: brousset.p@chu-toulouse.fr | +33 5 31 156 141.  
+<sup>*</sup>	Authors equally contributed.
 
 **Imag'IN Platform :** https://www.imagin-labs.net
 
