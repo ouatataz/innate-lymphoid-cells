@@ -25,6 +25,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Import necessary libraries
+import os
 import os
 import glob, re
 import pandas as pd
@@ -41,7 +43,7 @@ dirname = os.path.dirname(__file__)
 # See: https://stackoverflow.com/questions/27476642/matplotlib-get-rid-of-max-open-warning-output
 mpl.rcParams.update({"figure.max_open_warning": 0}) # Get rid of max_open_warning output (matplotlib)
 
-# Import modules
+# Import custom utilities module
 utilities_Path = dirname + "/MODULES/utilities.py"
 spec = importlib.util.spec_from_file_location("utilities", utilities_Path)
 utilities = importlib.util.module_from_spec(spec)
@@ -51,16 +53,17 @@ spec.loader.exec_module(utilities)
 utilities.clear_TerminalConsole()
 ###################################
 
-# Global vars
-extension = "svg" # Can be: "png", "svg", etc...
-axe_label_color = "#333" # Can be: "#ccc"...
-axe_color = "#777" # Can be: "#ccc"...
-labelsize = 6 # Format: x pt
-fontscale = 1 # Font scaling (1 = 100%)...
+# Global variables for visualization and formatting
+extension = "svg"  # File extension for output images / Can be: "png", "svg", etc...
+axe_label_color = "#333"  # Axis label color / Can be: "#ccc"...
+axe_color = "#777"  # Axis color / Can be: "#ccc"...
+labelsize = 6  # Font size for labels / Format: x pt
+fontscale = 1  # Font scaling factor / Font scaling (1 = 100%)...
 
+# Clinical dataset filename
 clinical_dataset = "_clinical_data"
 
-# Local dataset
+# Define datasets and their structure
 datasets_dict = {
     "_ST&TdT_THs_Layer1+Cortex+Medulla": {
         "percentage": [
@@ -887,7 +890,12 @@ phenotypes_ordered_dict = {
 }
 
 # HELPER FUNCTIONS
+# For data processing and visualization
 def rename_dataframe_cols(df, renamed_cols):
+    """
+    Rename columns in the dataframe for better readability.
+    """
+
     df["Analysis Region"] = df["Analysis Region"].replace("Layer 1", "Whole tissue")
     df["Analysis Region"] = df["Analysis Region"].replace("GerminalCenter", "Germinal center") # Interface...
     df["Analysis Region"] = df["Analysis Region"].replace("GC Excluded", "Extra-follicular zone")
@@ -899,6 +907,10 @@ def rename_dataframe_cols(df, renamed_cols):
     return df
 
 def get_clinical_dataframe_rows(clinical_dataset, tissue_code, clinical_index):
+    """
+    Load and filter clinical data based on tissue codes and clinical indices.
+    """
+
     # Local dataset path
     file_path = dirname + "/DATASETS/" + clinical_dataset + ".csv"
 
@@ -927,6 +939,10 @@ def get_clinical_dataframe_rows(clinical_dataset, tissue_code, clinical_index):
     return df_clinical
 
 def create_phenotype_dataframes(dataset, dataset_keys, input_file):
+    """
+    Create phenotype dataframes for clustering and visualization.
+    """
+    
     # Dataset key values
     data_type = dataset_keys[3]
     tissue_selection = dataset_keys[2]
@@ -1125,15 +1141,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 4 # Init with 4 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -1179,15 +1196,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 3 # Init with 3 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -1390,15 +1408,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 4 # Init with 4 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -1444,15 +1463,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 3 # Init with 3 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -1655,15 +1675,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["NK/ILC1ie", "ILC1", "ILC2", "ILC3", "TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 4 # Init with 4 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -1709,15 +1730,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["NK/ILC1ie", "ILC1", "ILC2", "ILC3", "TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 3 # Init with 3 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -1920,15 +1942,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["NK/ILC1ie", "ILC1", "ILC2", "ILC3", "TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 4 # Init with 4 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -1974,15 +1997,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     else: continuous_data = ["NK/ILC1ie", "ILC1", "ILC2", "ILC3", "TH1 (TdT-)", "TH1 (TdT+)", "Immature TH1", "TH2 (TdT-)", "TH2 (TdT+)", "Immature TH2", "TH17 (TdT-)", "TH17 (TdT+)", "Immature TH17"]
                     categorical_data = ["Analysis Region", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 3 # Init with 3 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -2154,15 +2178,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                 else: continuous_data = ["NK/ILC1ie", "ILC1", "ILC2", "ILC3", "TH1", "TH2", "TH17"]
                 categorical_data = ["Tissue Code", "Age Range", "Sex", "Histology Bool"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 4 # Init with 4 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -2203,15 +2228,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                 else: continuous_data = ["NK/ILC1ie", "ILC1", "ILC2", "ILC3", "TH1", "TH2", "TH17"]
                 categorical_data = ["Tissue Code", "Age Range", "Sex"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 4 # Init with 4 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -2386,15 +2412,16 @@ def create_phenotype_dataframes(dataset, dataset_keys, input_file):
                     if "T" in joined_df.columns: continuous_data = ["T", "TH1", "TH2", "TH17"]
                     else: continuous_data = ["TH1", "TH2", "TH17"]
 
-                #describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
+                if describe_data:
+                    describe_dataframe(joined_df, continuous_data, categorical_data, True, True)
 
                 # Scale dataframe (try to get a gaussian distribution)
                 df_scaled = scale_dataframe(joined_df, continuous_data, "PowerTransformer", False)
 
                 # Clustering analysis
                 n_clusters = 4 # Init with 4 clusters...
-                clustering_analyis(df_scaled, False, False) # Find the number of clusters
-                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, False) # Get clusters
+                clustering_analyis(df_scaled, clustering_analysis_print_output, clustering_analysis_show_plot) # Find the number of clusters
+                clusters = pca_analyis(df_scaled, len(continuous_data), n_clusters, pca_analysis_show_plots) # Get clusters
 
                 # Add clusters to "row_colors"
                 row_color_palette = dict(zip(np.unique(clusters), "rgby"))
@@ -2436,6 +2463,8 @@ def pca_analyis(df_scaled, n_components, n_clusters, show_plot=False):
         # Plot PCA
         plt.bar(range(1, len(pca.explained_variance_) + 1), pca.explained_variance_)
 
+        plt.title("PCA Analysis")
+
         plt.tight_layout()
         plt.show()
 
@@ -2448,6 +2477,8 @@ def pca_analyis(df_scaled, n_components, n_clusters, show_plot=False):
         zdata = pca_df.iloc[:,2]
 
         ax.scatter3D(xdata, ydata, zdata, c=y, cmap="tab10_r")
+
+        plt.title("3D PCA Analysis")
 
         plt.tight_layout()
         plt.show()
@@ -2481,6 +2512,8 @@ def clustering_analyis(df_scaled, print_output=False, show_plot=False):
         plt.plot(range(1, 11), WCSS)
         plt.xlabel("cluster")
         plt.ylabel("WCSS")
+
+        plt.title("Clustering Analysis")
 
         plt.tight_layout()
         plt.show()
@@ -2526,12 +2559,18 @@ def describe_dataframe(df, continuous_data, categorical_data, show_swarmplot=Fal
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         sns.swarmplot(x="variable", y="value", data=pd.melt(df, value_vars=continuous_data), size=2.5, log_scale=True)
         plt.xticks(rotation=90)
+
+        plt.title("Swarmplot of Continuous Data")
+        
         plt.tight_layout()
         plt.show()
 
     if categorical_count:
         sns.countplot(x="value", data=pd.melt(df, value_vars=categorical_data))
         plt.xticks(rotation=90)
+
+        plt.title("Countplot of Categorical Data")
+
         plt.tight_layout()
         plt.show()
 
@@ -2925,6 +2964,10 @@ def plot_dataframe_to_file(value_name, dataset_keys, df, row_colors, outpath, cu
 
 # DRAW FUNCTION
 def draw(dataset_dict, dataset_keys, custom_legends=False, save=False):
+    """
+    Main function to generate clustermaps for the given datasets.
+    """
+    
     # Dataset key values
     data_type = dataset_keys[3]
     tissue_selection = dataset_keys[2]
@@ -3025,6 +3068,14 @@ def draw(dataset_dict, dataset_keys, custom_legends=False, save=False):
 #-------
 # DRAW !
 #-------
+
+# Global vars
+describe_data = False # Set to "True" to describe continuous and categorical data
+pca_analysis_show_plots = False # Set to "True" to show PCA analysis plots interactively
+clustering_analysis_show_plot = False # Set to "True" to show Clustering analysis plots interactively
+clustering_analysis_print_output = False # Set to "True" to print clustering analysis output interactively
+
+# Example usage
 draw(datasets_dict, [["AA", "DA", "DC", "SG", "SR", "ST"], ["Sex", "Age Range", "Histology Bool"], "_ALL_Splitted_Layer1", "percentage", None], True, True)
 draw(datasets_dict, [["AA", "DA", "DC", "SG", "SR", "ST"], ["Sex", "Age Range", "Histology Bool"], "_ALL_Splitted_Layer1", "density", None], True, True)
 

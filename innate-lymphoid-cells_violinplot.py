@@ -25,6 +25,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Import necessary libraries
 import os
 import glob, re
 import pandas as pd
@@ -43,7 +44,7 @@ dirname = os.path.dirname(__file__)
 # See: https://stackoverflow.com/questions/27476642/matplotlib-get-rid-of-max-open-warning-output
 mpl.rcParams.update({"figure.max_open_warning": 0}) # Get rid of max_open_warning output (matplotlib)
 
-# Import modules
+# Import custom utilities module
 utilities_Path = dirname + "/MODULES/utilities.py"
 spec = importlib.util.spec_from_file_location("utilities", utilities_Path)
 utilities = importlib.util.module_from_spec(spec)
@@ -53,17 +54,17 @@ spec.loader.exec_module(utilities)
 utilities.clear_TerminalConsole()
 ###################################
 
-# Global vars
-extension = "svg" # Can be: "png", "eps", "svg", etc...
-plot_style = "white" # Can be: "whitegrid", etc...
-grid_color = "#777" # Can be: "#ccc"...
-stripplot_color = "#642222" # Can be: "#ccc"...
-stripplot_color_palette = ["#642222", "#226422"] # Can be: "#ccc"...
-axe_label_color = "#333" # Can be: "#ccc"...
-axe_color = "#777" # Can be: "#ccc"...
-labelsize = 3 # Format: x pt
+# Global variables for visualization and formatting
+extension = "svg"  # File extension for output images / Can be: "png", "svg", etc...
+plot_style = "white" # Plot style / Can be: "whitegrid", etc...
+grid_color = "#777" # Grid color / Can be: "#ccc"...
+stripplot_color = "#642222" # Stripplot color / Can be: "#ccc"...
+stripplot_color_palette = ["#642222", "#226422"] # Stripplot color palette / Can be: "#ccc"...
+axe_label_color = "#333"  # Axis label color / Can be: "#ccc"...
+axe_color = "#777"  # Axis color / Can be: "#ccc"...
+labelsize = 3  # Font size for labels / Format: x pt
 
-# Local dataset
+# Define datasets and their structure
 datasets_dict___AllData = {
     "multiplexMain": {
         "percentage": [
@@ -3560,7 +3561,12 @@ phenotypes_ordered_dict___Figures_B_T_IL7R_ST_WithPanelCD20 = {
 }
 
 # HELPER FUNCTIONS
+# For data processing and visualization
 def rename_dataframe_cols(df, renamed_cols):
+    """
+    Rename columns in the dataframe for better readability.
+    """
+
     df["Analysis Region"] = df["Analysis Region"].replace("Layer 1", "Whole tissue")
     df["Analysis Region"] = df["Analysis Region"].replace("GerminalCenter", "Germinal center") # Interface...
     df["Analysis Region"] = df["Analysis Region"].replace("GC Excluded", "Extra-follicular zone")
