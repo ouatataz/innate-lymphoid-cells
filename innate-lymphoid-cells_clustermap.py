@@ -3090,7 +3090,7 @@ def draw(dataset_dict, dataset_keys, custom_legends=False, save=False):
 _get_source_data = True # Set to "True" to get the source data...
 describe_data = False # Set to "True" to describe continuous and categorical data
 pca_analysis_show_plots = False # Set to "True" to show PCA analysis plots interactively
-clustering_analysis_show_plot = False # Set to "True" to show Clustering analysis plots interactively
+clustering_analysis_show_plot = False # Set to "True" to show clustering analysis plots interactively
 clustering_analysis_print_output = False # Set to "True" to print clustering analysis output interactively
 
 # Example usage

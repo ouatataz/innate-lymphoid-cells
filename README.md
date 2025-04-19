@@ -14,7 +14,7 @@ Datasets, visualization and analysis tools used in the paper *"Spatial mapping o
 
 1. **Install Required Dependencies**   
     
-    Ensure you have the necessary Python libraries installed. You can install them using ```pip```: ```pip install pandas seaborn matplotlib numpy scikit-learn```
+    Ensure you have the necessary Python libraries installed. You can install them using ```pip```: ```pip3 install pandas seaborn matplotlib numpy scikit-learn```
 
 2. **Set Up the Directory Structure**
 
@@ -29,16 +29,16 @@ Datasets, visualization and analysis tools used in the paper *"Spatial mapping o
     - Set the global vars:
         - ```describe_data```: set to ```True``` to describe continuous and categorical data
         - ```pca_analysis_show_plots```: set to ```True``` to show PCA analysis plots interactively
-        - ```clustering_analysis_show_plot```: set to ```True``` to show Clustering analysis plots interactively
+        - ```clustering_analysis_show_plot```: set to ```True``` to show clustering analysis plots interactively
         - ```clustering_analysis_print_output```: set to ```True``` to print clustering analysis output interactively
     - Modify the ```draw()``` function calls at the bottom of the script to specify the dataset and parameters you want to process.    
     - Example:
 
-        ```draw(datasets_dict, [["AA", "DA", "DC", "SG", "SR", "ST"], ["Sex", "Age Range", "Histology Bool"], "_ALL_Splitted_Layer1", "percentage", None], True, True)```
+        ```draw(datasets_dict, [["AA", "DA", "DC", "SG", "SR", "ST"], ["Sex", "Age Range"], "_ALL_Merged_Layer1", "density", None], True, True)```
 
         > - Dataset Keys: Adjust the dataset keys to match your input data.
         > - Data Type: Choose between ```"percentage"``` or ```"density"```.
-        > - Save Option: Set save=True to save the output files.
+        > - Save Option: Set ```save=True``` to save the output files.
 
 4. **Run the Script**
 
@@ -62,7 +62,7 @@ Datasets, visualization and analysis tools used in the paper *"Spatial mapping o
 
 1. **Install Required Dependencies**   
     
-    Ensure you have the necessary Python libraries installed. You can install them using ```pip```: ```pip install pandas seaborn matplotlib numpy importlib```
+    Ensure you have the necessary Python libraries installed. You can install them using ```pip```: ```pip3 install pandas seaborn matplotlib numpy importlib```
 
 2. **Run the Script**
 
