@@ -6437,7 +6437,7 @@ def plot_dataframe_to_file_figures_FlowCytometry(y_axis_legends, df, order, outp
 
                     df_index += 1
             else:
-                if keyword == "ILC": df_index = 0
+                if keyword == "ILCs": df_index = 0
                 elif keyword == "NK": df_index = 1
 
                 sns_plot = sns.violinplot(data=df_join[df_index], ax=axes, x="Phenotypes", y="Value", bw_adjust=.55, cut=2, hue="Phenotypes", hue_order=order[df_index], palette=customPalettes[df_index], linewidth=.15, fill=True, split=False, order=order[df_index], density_norm="count", inner_kws=dict(marker=".", box_width=4, whis_width=.75, color=".55"))
@@ -6523,6 +6523,11 @@ def draw_paper_1(dataset_dict, dataset_keys, row, col, fixed_limits):
     output_filename = "violinPlot_Paper_1_" + tissue_selection + "_" + data_type
     outpath = os.path.join(output_dir, output_filename + "." + extension)
 
+    # Output directory (csv)
+    source_data = 'sourceData_'
+    csv_output_filename = f"{source_data}" + output_filename
+    csv_outpath = os.path.join(output_dir, csv_output_filename + ".csv")
+
     # Draw...
     if (tissue_selection == "B+T+IL7R"):
         dfs = [] # Init an empty array
@@ -6568,6 +6573,34 @@ def draw_paper_1(dataset_dict, dataset_keys, row, col, fixed_limits):
                     value_name, df, order = phenotype_dataframes
                     if not order in orders: orders.append(order)
                     dfs.append(df)
+
+    # Get data source...
+    if _get_source_data:
+        df_concat = pd.concat(dfs, ignore_index=True)
+        df_concat = df_concat.dropna(subset=["# Cells / mm²"])
+        
+        # Simplify the "Image Tag" column
+        split_string_1 = df_concat["Image Tag"].str.split("_")
+        split_string_1_1 = split_string_1.str[2].str.split(".")
+
+        part_1 = split_string_1.str[0]
+        part_3 = split_string_1_1.str[1]
+        part_2 = split_string_1_1.str[2].str.replace("Run", "")
+        part_2 = part_2.str.replace("FL", "FOLLICULAR-LYMPHOMA")
+        part_2 = part_2.str.replace("SG", "LYMPH-NODE")
+        part_2 = part_2.str.replace("DA", "APPENDIX")
+        part_2 = part_2.str.replace("AA", "TONSIL")
+        part_2 = part_2.str.replace("SR", "SPLEEN")
+        part_2 = part_2.str.replace("ST", "THYMUS")
+        part_2 = part_2.str.replace("DC", "ILEUM")
+
+        transform_string = part_1 + "_" + part_2 + "_" + part_3
+        df_concat["Image Tag"] = transform_string
+        
+        #print(df_concat)
+
+        df_concat.to_csv(csv_outpath, sep=",", encoding="utf-8", index=False, header=True) # Use "na_rep='NaN'" to keep NaN values in the CSV file 
+    # --------------------------------------------------------------------------------------------------------------------------------------------
 
     plot_dataframe_to_file_paper_1(value_name, dataset_keys, dfs, orders, outpath, row, col, fixed_limits)
 
@@ -6712,7 +6745,13 @@ def draw_figures_B_T_IL7R_ST_WithPanelCD20(dataset_dict, dataset_keys, row, col,
 def draw_figures_FlowCytometry(dataset, keyword, row, col, fixed_limits):
     # Output directory
     output_dir = dirname + "/OUTPUT"
-    outpath = os.path.join(output_dir, "violinPlot_figures_FlowCytometry_" + keyword + "." + extension)
+    output_filename = "violinPlot_figures_FlowCytometry_"
+    outpath = os.path.join(output_dir, output_filename + keyword + "." + extension)
+
+    # Output directory (csv)
+    source_data = 'sourceData_'
+    csv_output_filename = f"{source_data}" + output_filename
+    csv_outpath = os.path.join(output_dir, csv_output_filename + keyword + ".csv")
 
     # Draw...
     dfs = [] # Init an empty array
@@ -6760,7 +6799,31 @@ def draw_figures_FlowCytometry(dataset, keyword, row, col, fixed_limits):
     orders.append(["ILC1", "ILC2", "ILC3"])
     orders.append(["NK/ILC1ie"])
 
+    # Get data source...
+    if _get_source_data:
+        if keyword == "ILCs+NK":
+            df_csv = dfs
+            df_concat = pd.concat(df_csv, ignore_index=True)
+        elif keyword == "ILCs":
+            df_concat = df_1
+        elif keyword == "NK":
+            df_concat = df_2
+
+        df_concat = df_concat.dropna(subset=["Value"])
+               
+        #print(df_concat)
+
+        df_concat.to_csv(csv_outpath, sep=",", encoding="utf-8", index=False, header=True) # Use "na_rep='NaN'" to keep NaN values in the CSV file 
+    # --------------------------------------------------------------------------------------------------------------------------------------------
+
     plot_dataframe_to_file_figures_FlowCytometry(y_axis_legends, dfs, orders, outpath, keyword, row, col, fixed_limits)
+
+#-------
+# DRAW !
+#-------
+
+# Global vars
+_get_source_data = True # Set to "True" to get the source data (for figures paper and flow cytometry only)...
 
 #-------------
 # BATCH DRAW !

@@ -3036,6 +3036,23 @@ def draw(dataset_dict, dataset_keys, custom_legends=False, save=False):
                             output_filename = "clustermap_" + tissue_selection + "_" + data_type
                             outpath = os.path.join(output_dir, output_filename + "." + extension)
 
+                            # Output directory (csv)
+                            source_data = 'sourceData_'
+                            csv_output_filename = f"{source_data}" + output_filename
+                            csv_outpath = os.path.join(output_dir, csv_output_filename + ".csv")
+
+                            # Get data source...
+                            if _get_source_data:
+                                df_csv = df.dropna(subset=["NK/ILC1ie", "ILC1", "ILC2", "ILC3", "TH1", "TH2", "TH17"])
+
+                                df_csv = df_csv.reset_index(drop=True)
+                                df_csv.index.name = "Case ID"
+                                                                
+                                #print(df_csv)
+
+                                df_csv.to_csv(csv_outpath, sep=",", encoding="utf-8", index=True, header=True) # Use "na_rep='NaN'" to keep NaN values in the CSV file 
+                            # ----------------------------------------------------------------------------------------------------------------------------------------
+
                             plot_dataframe_to_file(value_name, dataset_keys, df, row_colors, outpath, custom_legends, save)
                     else:
                         if tissue_selection == "_ALL_Splitted_Layer1":
@@ -3070,6 +3087,7 @@ def draw(dataset_dict, dataset_keys, custom_legends=False, save=False):
 #-------
 
 # Global vars
+_get_source_data = True # Set to "True" to get the source data...
 describe_data = False # Set to "True" to describe continuous and categorical data
 pca_analysis_show_plots = False # Set to "True" to show PCA analysis plots interactively
 clustering_analysis_show_plot = False # Set to "True" to show Clustering analysis plots interactively
