@@ -2,6 +2,8 @@
 **Tools repository for data visualization using python packages (Matplotlib, Panda, Seaborn, etc...).**  
 Datasets, visualization and analysis tools used in the paper *"Spatial mapping of Innate Lymphoid Cells in human lymphoid tissues and lymphoma at single-cell resolution"* authored by *Nathalie Van Acker <sup>#,1,2</sup>, François-Xavier Frenois <sup>#,1,2</sup>, Pauline Gravelle <sup>1,2</sup>, Marie Tosolini <sup>2</sup>, Charlotte Syrykh <sup>1</sup>, Camille Laurent <sup>1,2</sup> and Pierre Brousset <sup>\*,1,2</sup>*.
 
+**Online version :** https://doi.org/10.1038/s41467-025-59811-1
+
 <sup>1</sup>	Department of Pathology, CHU, Imag’IN Platform, IUCT-Oncopole, Toulouse, France.  
 <sup>2</sup>	Cancer Research Center of Toulouse, Team 9 NoLymIT and Labex TOUCAN, Toulouse, France.  
 <sup>*</sup>	Correspondence: brousset.p@chu-toulouse.fr | +33 5 31 156 141.  
